@@ -1,27 +1,37 @@
-const User = require('../models/userModel');
+const User = require('../models/UserModel');
   const bcrypt = require('bcryptjs');
   const jwt = require('jsonwebtoken');
   
   exports.register = async (req, res) => {
     try {
-      const { email, password, phoneNumber} = req.body;
-      const user = await User.create({ email, password, phoneNumber});
+      const { name, email, password, phoneNumber, companyName, domainName} = req.body;
+      const user = await User.create({ name, email, password, phoneNumber, companyName, domainName, role: 'owner'});
       // create a token for the user
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       // Saving the token in DB for SSO
       user.token = token;
       user.lastLogin = new Date();
       await user.save();
-      res.status(201).json({ message: "User created successfully", user });
+      // return res.status(201).json({ message: "User created successfully", user });
+      res.cookie('token', token, { httpOnly: false, secure: false, sameSite: 'none' });
+      return res.status(201).json({ message: "User created successfully", user });
     } catch (error) {
-      res.status(500).json({ error:error, message: error.message });
+      return res.status(500).json({ error:error, message: error.message });
     }
   };
   
   exports.login = async (req, res) => {
     try {
-      const { email, password } = req.body;
-      const user = await User.findOne({ email });
+      // TODO: check from where the request is coming (domain)
+      const { email, password, domainName } = req.body;
+      let user;
+      if (domainName == 'localhost'){
+        user = await User.findOne({ email });
+      }
+      else {
+        user = await User.findOne({ email, domainName });
+      }
+      
       if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
@@ -30,10 +40,12 @@ const User = require('../models/userModel');
       user.token = token;
       user.lastLogin = new Date();
       await user.save();
-      res.status(200).json({ message: "Logged in successfully", token: token });
+      //   set cookies
+      res.cookie('token', token, { httpOnly: false, secure: false, sameSite: 'none' });
+      return res.status(200).json({ message: "Logged in successfully", token: token });
     } catch (error) {
   
-      res.status(500).json({ error: error, message: error.message });
+      return res.status(500).json({ error: error, message: error.message });
     }
   };
   
