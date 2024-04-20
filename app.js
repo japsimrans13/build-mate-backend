@@ -12,10 +12,11 @@ const { ownerAuthMiddleware } = require('./middlewares/authMiddleware');
 const app = express();
 
 app.use(cors(
-    // {
-    //     origin: ["http://localhost:5173", "https://build-mate.in", "https://build-mate.in"], 
-    //     credentials: true
-    // }
+    {
+        origin: "*", 
+        // origin: ["http://localhost:5173", "https://build-mate.in", "https://build-mate.in"], 
+        credentials: true
+    }
 ));
 
 
