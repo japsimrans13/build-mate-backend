@@ -18,6 +18,8 @@ app.use(cookieParser());
 
 app.use(cors({
   "origin": ["http://localhost:5173", "http://localhost:5173/", "https://build-mate.in", "https://build-mate.in/"],
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
 
 app.use('/api/auth', authRoutes);
