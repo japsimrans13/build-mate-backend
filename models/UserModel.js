@@ -7,7 +7,7 @@ email: { type: String, required: true, unique: true },
 phoneNumber: { type: Number, required: true, unique: true },
 companyName: { type: String, required: true },
 password: { type: String, required: true },
-domainName: { type: String, required: true, unique: true},
+domainName: { type: String, required: true},
 role: {type: String, enum: ['owner', 'staff', 'client']},
 projects: [{type: mongoose.Schema.Types.ObjectId, ref: 'Project'}],
 // staff and client can only be for a user with role: owner
