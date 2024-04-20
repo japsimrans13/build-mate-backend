@@ -8,7 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const ownerRoutes = require('./routes/ownerRoutes');
 
 // middlewares
-const { authMiddleware, ownerAuthMiddleware } = require('./middlewares/authMiddleware');
+const { ownerAuthMiddleware } = require('./middlewares/authMiddleware');
 const app = express();
 
 app.use(cors(
