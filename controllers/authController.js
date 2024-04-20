@@ -26,11 +26,11 @@ exports.login = async (req, res) => {
     // TODO: check from where the request is coming (domain)
     const { email, password, domainName } = req.body;
     let user;
-    if (domainName == 'localhost'){
-      user = await User.findOne({ email });
-    }
+    // if (domainName == 'localhost'){
+    //   user = await User.findOne({ email });
+    // }
     else {
-      user = await User.findOne({ email, domainName });
+      user = await User.findOne({ email });
     }
     
     if (!user || !(await bcrypt.compare(password, user.password))) {
