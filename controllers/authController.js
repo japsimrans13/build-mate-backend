@@ -15,7 +15,7 @@ exports.register = async (req, res) => {
     // return res.status(201).json({ message: "User created successfully", user });
     // expire token after 15
     res.cookie('token', token, { httpOnly: false, secure: false, sameSite: 'none', expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)});
-    return res.status(201).json({ message: "User created successfully", user });
+    return res.status(201).json({ message: "User created successfully",token, user });
   } catch (error) {
     return res.status(500).json({ error:error, message: error.message });
   }
