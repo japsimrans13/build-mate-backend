@@ -17,7 +17,7 @@ app.use(cookieParser());
 // app.use(cors());
 
 app.use(cors({
-  "origin": ["http://localhost:5173", "https://register.build-mate.in", "https://*.build-mate.in", "https://jp.build-mate.in"],
+  "origin": ["http://localhost:5173", "https://register.build-mate.in/", "https://register.build-mate.in/","https://*.build-mate.in", "https://jp.build-mate.in", "https://jp.build-mate.in/", "https://bhavjit.build-mate.in", "https://bhavjit.build-mate.in/"],
 }));
 
 app.use('/api/auth', authRoutes);
