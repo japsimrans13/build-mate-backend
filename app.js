@@ -12,10 +12,7 @@ const { ownerAuthMiddleware } = require('./middlewares/authMiddleware');
 const app = express();
 
 app.use(cors({
-  "origin": "*",
-  "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-  "preflightContinue": false,
-  "optionsSuccessStatus": 204
+  "origin": ["http://localhost:5173", "build-mate.in"],
 }));
 
 
