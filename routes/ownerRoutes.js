@@ -14,4 +14,8 @@ router.get('/get-clients', ownerController.getClients);
 // Project routes
 router.post('/create-project', ownerController.crateProject);
 router.get('/get-projects', ownerController.getProjects);
+
+// Task routes
+router.post('/create-task', ownerController.createTask);
+router.get('/get-tasks', ownerController.getTasks);
 module.exports = router;

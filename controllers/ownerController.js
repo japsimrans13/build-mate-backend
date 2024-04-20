@@ -1,5 +1,6 @@
 const User = require('../models/UserModel');
 const Project = require('../models/ProjectModel');
+const Task = require('../models/TaskModel');
 
 // Staff APIs
 exports.createStaff = async (req, res) => {
@@ -125,6 +126,34 @@ exports.getProjects = async (req, res) => {
     const startIndex = (page - 1) * limit;
     const projects = await Project.find({ owner: req.user._id }).populate('staff').populate('client').populate('task').limit(limit).skip(startIndex);
     return res.status(200).json({ projects });
+  } catch (error) {
+    return res.status(500).json({ error:error, message: error.message });
+  }
+}
+
+
+
+// Task APIs
+exports.createTask = async (req, res) => {
+  try {
+    const {name, description, project, assignedTo} = req.body;
+    const task = await Task.create({ name, description, status:'todo', project, createdBy: req.user._id, assignedTo});
+    return res.status(201).json({ message: "Task created successfully", task });
+  } catch (error) {
+    return res.status(500).json({ error:error, message: error.message });
+  }
+}
+
+// Get all tasks created by the owner
+exports.getTasks = async (req, res) => {
+  // tasks API with pagination
+  try { 
+    const page = parseInt(req.query.page) || 1; // Default to page 1
+    const limit = parseInt(req.query.limit) || 10; // Default limit to 10
+    // Calculate the starting index of pagination
+    const startIndex = (page - 1) * limit;
+    const tasks = await Task.find({ createdBy: req.user._id }).populate('project').populate('assignedTo').limit(limit).skip(startIndex);
+    return res.status(200).json({ tasks });
   } catch (error) {
     return res.status(500).json({ error:error, message: error.message });
   }
