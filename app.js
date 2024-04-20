@@ -11,16 +11,18 @@ const ownerRoutes = require('./routes/ownerRoutes');
 const { ownerAuthMiddleware } = require('./middlewares/authMiddleware');
 const app = express();
 
-app.use(cors({
-  "origin": ["http://localhost:5173", "https://register.build-mate.in", "https://*.build-mate.in", "https://jp.build-mate.in"],
-}));
-
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors());
+
+// app.use(cors({
+//   "origin": ["http://localhost:5173", "https://register.build-mate.in", "https://*.build-mate.in", "https://jp.build-mate.in"],
+// }));
+
 app.use('/api/auth', authRoutes);
 app.use('/api/owner', ownerAuthMiddleware, ownerRoutes);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
