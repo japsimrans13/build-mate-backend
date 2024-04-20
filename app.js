@@ -17,7 +17,7 @@ app.use(cookieParser());
 // app.use(cors());
 
 app.use(cors({
-  "origin": "https://build-mate.in/",
+  "origin": "https://build-mate.in",
 }));
 
 app.use('/api/auth', authRoutes);
