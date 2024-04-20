@@ -29,9 +29,9 @@ exports.login = async (req, res) => {
     // if (domainName == 'localhost'){
     //   user = await User.findOne({ email });
     // }
-    else {
+    // else {
       user = await User.findOne({ email });
-    }
+    // }
     
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: "Invalid credentials" });
