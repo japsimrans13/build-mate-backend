@@ -152,7 +152,7 @@ exports.getTasks = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10; // Default limit to 10
     // Calculate the starting index of pagination
     const startIndex = (page - 1) * limit;
-    const tasks = await Task.find({ createdBy: req.user._id }).populate('project').populate('assignedTo').populate('staff').limit(limit).skip(startIndex);
+    const tasks = await Task.find({ createdBy: req.user._id }).populate('project').populate('assignedTo').limit(limit).skip(startIndex);
     return res.status(200).json({ tasks });
   } catch (error) {
     return res.status(500).json({ error:error, message: error.message });
