@@ -15,6 +15,7 @@ List out the technologies and frameworks used in the project:
 - React.js
 - Node.js
 - AWS EC2 Server
+- JESW-SUITE (Open Source npm package to get boilerplate code for Express JS)
 
 ## Getting Started
 
