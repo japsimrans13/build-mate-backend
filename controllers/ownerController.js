@@ -136,8 +136,8 @@ exports.getProjects = async (req, res) => {
 // Task APIs
 exports.createTask = async (req, res) => {
   try {
-    const {name, description, project, assignedTo} = req.body;
-    const task = await Task.create({ name, description, status:'todo', project, createdBy: req.user._id, assignedTo});
+    const {name, description, project, dueDate, assignedTo} = req.body;
+    const task = await Task.create({ name, description, status:'todo', dueDate, project, createdBy: req.user._id, assignedTo});
     return res.status(201).json({ message: "Task created successfully", task });
   } catch (error) {
     return res.status(500).json({ error:error, message: error.message });
@@ -152,7 +152,7 @@ exports.getTasks = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10; // Default limit to 10
     // Calculate the starting index of pagination
     const startIndex = (page - 1) * limit;
-    const tasks = await Task.find({ createdBy: req.user._id }).populate('project').populate('assignedTo').limit(limit).skip(startIndex);
+    const tasks = await Task.find({ createdBy: req.user._id }).populate('project').populate('assignedTo').populate('staff').limit(limit).skip(startIndex);
     return res.status(200).json({ tasks });
   } catch (error) {
     return res.status(500).json({ error:error, message: error.message });

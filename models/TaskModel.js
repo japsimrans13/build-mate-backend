@@ -5,6 +5,7 @@ name: { type: String, required: true },
 project: {type: mongoose.Schema.Types.ObjectId, ref: 'Project'},
 createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
 assignedTo: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+dueDate: {type: Date},
 status: {type: String, enum: ['todo', 'in-progress', 'completed'], default: 'todo'},
 description: {type: String},
 files: [{
