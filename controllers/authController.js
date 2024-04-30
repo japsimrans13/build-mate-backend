@@ -1,4 +1,5 @@
 const User = require('../models/UserModel');
+const Domain = require('../models/DomainModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -11,6 +12,8 @@ exports.register = async (req, res) => {
     // Saving the token in DB for SSO
     user.token = token;
     user.lastLogin = new Date();
+    // Saving the Domain in DB
+    const domain = await Domain.create({ subDomain: domainName, owner: user._id });
     await user.save();
     // return res.status(201).json({ message: "User created successfully", user });
     // expire token after 15
@@ -24,14 +27,17 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     // TODO: check from where the request is coming (domain)
-    const { email, password, domainName } = req.body;
+    const { email, password } = req.body;
+    const hostName = req.headers.host;
+    const domainName = hostName.split(':')[0];
+
     let user;
-    // if (domainName == 'localhost'){
-    //   user = await User.findOne({ email });
-    // }
-    // else {
+    if (domainName == 'localhost'){
       user = await User.findOne({ email });
-    // }
+    }
+    else {
+      user = await User.findOne({ email: email, domainName: domainName});
+    }
     
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: "Invalid credentials" });
