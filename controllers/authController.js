@@ -28,16 +28,19 @@ exports.login = async (req, res) => {
   try {
     // TODO: check from where the request is coming (domain)
     const { email, password } = req.body;
-    const hostName = req.headers.host;
-    const domainName = hostName.split(':')[0];
-
+    const origin = req.headers.origin;
+    const domainName = origin.split('//')[1].split(':')[0];
+    const subDomain = domainName.split('.')[0];
+    // console.log('domainName', domainName);
+    // console.log('subDomain', subDomain);
     let user;
-    if (domainName == 'localhost'){
+    if (subDomain == 'localhost'){
       user = await User.findOne({ email });
     }
     else {
-      user = await User.findOne({ email: email, domainName: domainName});
+      user = await User.findOne({ email: email, domainName: subDomain});
     }
+    // console.log('user', user); 
     
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: "Invalid credentials" });
