@@ -17,7 +17,7 @@ exports.register = async (req, res) => {
     await user.save();
     // return res.status(201).json({ message: "User created successfully", user });
     // expire token after 15
-    res.cookie('token', token, { httpOnly: false, secure: false, sameSite: 'none', expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)});
+    // res.cookie('token', token, { httpOnly: false, secure: false, sameSite: 'none', expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)});
     return res.status(201).json({ message: "User created successfully",token, user });
   } catch (error) {
     return res.status(500).json({ error:error, message: error.message });
@@ -48,7 +48,7 @@ exports.login = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
     //   set cookies
-    res.cookie('token', token, { httpOnly: false, secure: false, sameSite: 'none',  expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)});
+    // res.cookie('token', token, { httpOnly: false, secure: false, sameSite: 'none',  expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)});
     return res.status(200).json({ message: "Logged in successfully", token , user});
   } catch (error) {
 
