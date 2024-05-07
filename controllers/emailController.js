@@ -11,7 +11,7 @@ exports.welcomeEmail = async (req, res) => {
         template: welcomeEmailTemplate({ name, domainName})
     });
 
-    return res.status(201).json({ message: "User created successfully", user });
+    return res.status(201).json({ message: "User created successfully" });
   } catch (error) {
     return res.status(500).json({ error:error, message: error.message });
   }
