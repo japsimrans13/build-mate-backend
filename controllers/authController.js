@@ -14,7 +14,9 @@ exports.register = async (req, res) => {
     // Save the domain in DB
     const domain = await Domain.create({ subDomain: domainName, owner: user._id });
     // Save the user in DB
-    const user = await User.create({ name, email, password, phoneNumber, companyName, domainName, role: 'owner'});
+    const user = await User.create({ name, email, password, phoneNumber, companyName, domainName, role: 'owner'}).catch((error) => {
+      return res.status(400).json({ message: error.message });
+    });
     // create a token for the user
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     // Saving the token in DB for SSO
