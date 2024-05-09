@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const domainSchema = new mongoose.Schema(
   {
     subDomain: { type: String, required: true, unique: true},
-    // If isOnHold is true, then the project is on hold, no one login to the project
+    // If isOnHold is true, then the project is on hold, no one can login to the project
     isOnHold: { type: Boolean, default: true },
     // In future we might add a custom domain feature
     externalDomain: { type: String },

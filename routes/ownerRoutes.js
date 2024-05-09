@@ -18,4 +18,8 @@ router.get('/get-projects', ownerController.getProjects);
 // Task routes
 router.post('/create-task', ownerController.createTask);
 router.get('/get-tasks', ownerController.getTasks);
+
+// Invoice routes
+router.post('/create-invoice', ownerController.createInvoice);
+router.get('/get-invoices', ownerController.getInvoices);
 module.exports = router;
