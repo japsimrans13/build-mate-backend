@@ -2,24 +2,5 @@ const express = require('express');
 const router = express.Router();
 const ownerController = require('../controllers/ownerController');
 
-
-// Staff routes
-router.post('/create-staff', ownerController.createStaff);
-router.get('/get-staff', ownerController.getStaff);
-
-// Client routes
-router.post('/create-client', ownerController.createClient);
-router.get('/get-clients', ownerController.getClients);
-
-// Project routes
-router.post('/create-project', ownerController.crateProject);
-router.get('/get-projects', ownerController.getProjects);
-
-// Task routes
-router.post('/create-task', ownerController.createTask);
-router.get('/get-tasks', ownerController.getTasks);
-
-// Invoice routes
-router.post('/create-invoice', ownerController.createInvoice);
-router.get('/get-invoices', ownerController.getInvoices);
+router.post('/update-user', ownerController.updateUser);
 module.exports = router;

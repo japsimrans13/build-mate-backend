@@ -4,13 +4,18 @@ const cors = require('cors');
 var bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
 const mongoose = require('mongoose');
-const authRoutes = require('./routes/authRoutes');
+const registerRoutes = require('./routes/registerRoutes');
+const userRoutes = require('./routes/userRoutes');
 const ownerRoutes = require('./routes/ownerRoutes');
+const staffRoutes = require('./routes/staffRoutes');
+const taskRoutes = require('./routes/taskRoutes');
+const clientRoutes = require('./routes/clientRoutes');
+const projectRoutes = require('./routes/projectRoutes.js');
 const testRoutes = require('./routes/testRoutes');
-const { ownerAuthMiddleware } = require('./middlewares/authMiddleware');
+const { authMiddleware } = require('./middlewares/authMiddleware');
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI, { useUnifiedTopology: true, useNewUrlParser: true,createIndexes: true})
+mongoose.connect(process.env.MONGODB_URI, { useUnifiedTopology: true, useNewUrlParser: true,createIndexes: true, useFindAndModify: false})
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.log('Could not connect to MongoDB', err));
 
@@ -22,9 +27,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 
+// Routes
+app.use('/api/register', registerRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/owner', authMiddleware, ownerRoutes);
+app.use('/api/staff', authMiddleware, staffRoutes);
+app.use('/api/client', authMiddleware, clientRoutes);
+// TODO: check routes below
+app.use('/api/project', authMiddleware, projectRoutes);
+app.use('/api/task', authMiddleware, taskRoutes);
 
-app.use('/api/auth', authRoutes);
-app.use('/api/owner', ownerAuthMiddleware, ownerRoutes);
+
 
 app.use('/test', testRoutes);
 
