@@ -12,8 +12,9 @@ const taskRoutes = require("./routes/taskRoutes");
 const clientRoutes = require("./routes/clientRoutes");
 const projectRoutes = require("./routes/projectRoutes.js");
 const documentRoutes = require("./routes/documentRoutes");
+const domainRoutes = require("./routes/domainRoutes");
 const testRoutes = require("./routes/testRoutes");
-const { findDocument, createDocument } = require("./controllers/documentController");
+const { findDocument } = require("./controllers/documentController");
 const { authMiddleware } = require("./middlewares/authMiddleware");
 const Document = require("./models/Document");
 // MongoDB connection
@@ -42,6 +43,7 @@ app.use("/api/client", authMiddleware, clientRoutes);
 app.use("/api/project", authMiddleware, projectRoutes);
 app.use("/api/task", authMiddleware, taskRoutes);
 app.use("/api/document", authMiddleware, documentRoutes);
+app.use("/api/domain", domainRoutes);
 app.use("/test", testRoutes);
 
 const io = require("socket.io")(8001, {
@@ -69,6 +71,7 @@ io.on("connection", (socket) => {
 
     socket.on("save-document", async (content) => {
       console.log("Content ", content);
+      // TODO: make this abstract
       await Document.findByIdAndUpdate(documentId, { content });
     });
   });

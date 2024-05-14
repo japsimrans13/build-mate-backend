@@ -7,7 +7,7 @@ exports.register = async (req, res) => {
   try {
     const { name, email, password, phoneNumber, companyName, domainName} = req.body;
     // TODO: Validate the domainName
-    const restrictedDomains = ['admin', 'www', 'api', 'app', 'auth'];
+    const restrictedDomains = ['admin', 'www', 'api', 'app', 'auth', 'cloud'];
     if (restrictedDomains.includes(domainName.toLowerCase())) {
       return res.status(400).json({ message: "Invalid domain name" });
     }    
