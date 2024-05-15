@@ -46,9 +46,10 @@ app.use("/api/document", authMiddleware, documentRoutes);
 app.use("/api/domain", domainRoutes);
 app.use("/test", testRoutes);
 
-const io = require("socket.io")(8001, {
+const io = require("socket.io")(8002, {
   cors: {
-    origin: "http://localhost:5173",
+    // origin: "http://localhost:5173",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
