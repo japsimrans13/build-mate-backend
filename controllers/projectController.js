@@ -25,9 +25,25 @@ exports.crateProject = async (req, res) => {
       // Calculate the starting index of pagination
       const startIndex = (page - 1) * limit;
       const projects = await Project.find({ owner: req.user._id }).populate('staff').populate('client').populate('task').limit(limit).skip(startIndex);
+      const projectsWithTaskCount = projectsWithTaskCounts(projects);
       return res.status(200).json({ projects });
     } catch (error) {
       return res.status(500).json({ error:error, message: error.message });
     }
   }
   
+// function to get task counts for each project
+  const projectsWithTaskCounts = (projects) => { 
+    return projects.map(project => {
+    const todoCount = project.tasks.filter(task => task.status === 'todo').length;
+    const inProgressCount = project.tasks.filter(task => task.status === 'in-progress').length;
+    const onHoldCount = project.tasks.filter(task => task.status === 'on-hold').length;
+    const completedCount = project.tasks.filter(task => task.status === 'completed').length;
+    return {
+      ...project.toObject(),
+      todoCount,
+      inProgressCount,
+      onHoldCount,
+      completedCount
+    };
+  })};

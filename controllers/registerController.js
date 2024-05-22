@@ -5,14 +5,14 @@ const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, phoneNumber, companyName, domainName} = req.body;
+    const { name, email, dob, password, phoneNumber, companyName, domainName} = req.body;
     // TODO: Validate the domainName
     const restrictedDomains = ['admin', 'www', 'api', 'app', 'auth', 'cloud'];
     if (restrictedDomains.includes(domainName.toLowerCase())) {
       return res.status(400).json({ message: "Invalid domain name" });
     }    
     // Save the user in DB
-    const user = await User.create({ name, email, password, phoneNumber, companyName, domainName, role: 'owner'})
+    const user = await User.create({ name, email, dob, password, phoneNumber, companyName, domainName, role: 'owner'})
     const domain = await Domain.create({ subDomain: domainName, owner: user._id });
     // create a token for the user
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);

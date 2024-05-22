@@ -5,12 +5,20 @@ const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    dob: { type: Date},
     phoneNumber: { type: Number, required: true, unique: true },
     companyName: { type: String, required: true },
     password: { type: String, required: true },
     domainName: { type: String, required: true },
     // isOnHold is used to stop the user from logging in
     isOnHold: { type: Boolean, default: false },
+    multiFactorAuth: { 
+      sms: { type: Boolean, default: false },
+      email: { type: Boolean, default: false },
+      googleAuthenticator: { type: Boolean, default: false },
+      hardwareKey: { type: Boolean, default: false },
+      fingerPrint: { type: Boolean, default: false },
+    },
     role: { type: String, enum: ["owner", "staff", "client"] },
     projects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Project" }],
     // staff and client can only be for a user with role: owner

@@ -3,8 +3,7 @@ const User = require("../models/UserModel");
 // Client APIs
 exports.createClient = async (req, res) => {
   try {
-    const { name, email, phoneNumber, password, project } = req.body;
-    const companyName = req.user.companyName;
+    const { name, email, companyName, phoneNumber, password, project } = req.body;
     const domainName = req.user.domainName;
     const user = await User.create({
       name,

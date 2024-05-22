@@ -29,6 +29,7 @@ exports.getAllTasks = async (req, res) => {
     // Get all the tasks
     const tasks = await Task.find({$or: [{ createdBy: req.user._id }, { assignedTo: req.user._id }]})
       .populate('project', 'project_id name description')
+      .populate('createdBy', 'email name')
       .populate('assignedTo', 'email name')
       .limit(limit)
       .skip(startIndex);
