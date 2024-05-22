@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const taskSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
+    task_id: { type: String, required: true, unique: true },
     project: { type: mongoose.Schema.Types.ObjectId, ref: "Project" },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     assignedTo: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

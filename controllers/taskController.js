@@ -4,8 +4,11 @@ const Task = require("../models/TaskModel");
 exports.createTask = async (req, res) => {
   try {
     const { name, description, project, dueDate, assignedTo } = req.body;
+    const taskCount = await Task.countDocuments({ owner: req.user._id });
+    const project_id = `TSK-${domain}-${taskCount}`;
     const task = await Task.create({
       name,
+      project_id,
       description,
       status: "todo",
       dueDate,
