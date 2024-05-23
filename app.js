@@ -16,7 +16,7 @@ const domainRoutes = require("./routes/domainRoutes");
 const testRoutes = require("./routes/testRoutes");
 const { findDocument } = require("./controllers/documentController");
 const { authMiddleware } = require("./middlewares/authMiddleware");
-const Document = require("./models/Document");
+const Document = require("./models/DocumentModel");
 // MongoDB connection
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -44,7 +44,7 @@ app.use("/api/project", authMiddleware, projectRoutes);
 app.use("/api/task", authMiddleware, taskRoutes);
 app.use("/api/document", authMiddleware, documentRoutes);
 app.use("/api/domain", domainRoutes);
-app.use("/test", testRoutes);
+app.use("/api/test", testRoutes);
 
 const io = require("socket.io")(8002, {
   cors: {

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Document = require("../models/Document");
+const Document = require("../models/DocumentModel");
 
 exports.findDocument = async (id) => {
   if (id == null) return;

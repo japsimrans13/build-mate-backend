@@ -23,7 +23,9 @@ const userSchema = new mongoose.Schema(
     projects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Project" }],
     // staff and client can only be for a user with role: owner
     staff: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    // TODO: add staffOnboarding model
     client: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    clientOnboarding: { type: mongoose.Schema.Types.ObjectId, ref: "ClientOnboarding" },
     // owner can only be for a user with role: staff or client
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     // Saving the token in DB for SSO

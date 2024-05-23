@@ -1,30 +1,83 @@
 const User = require("../models/UserModel");
-
+const ClientOnboarding = require("../models/ClientOnboardingModel");
+const { v4: uuidv4 } = require("uuid");
+const { uploadFileS3 } = require("../services/awsS3FileUpload");
+const formidable = require("formidable");
+const fs = require("fs");
 // Client APIs
 exports.createClient = async (req, res) => {
   try {
-    const { name, email, companyName, phoneNumber, password, projects } = req.body;
-    const domainName = req.user.domainName;
-    const client = await User.create({
-      name,
-      email,
-      phoneNumber,
-      password,
-      companyName,
-      domainName,
-      role: "client",
-      projects,
-      owner: req.user._id,
+    const form = new formidable.IncomingForm();
+    form.parse(req, async (error, fields, files) => {
+      if (error) {
+        res.status(400).send(error);
+      }
+      // console.log(fields);
+      // console.log(files);
+      const { name, email, companyName, phoneNumber, password } = fields;
+      const projects = fields.projects.split(",");
+      // create a new client
+      const domainName = req.user.domainName;
+      const client = await User.create({
+        name,
+        email,
+        phoneNumber,
+        password,
+        companyName,
+        domainName,
+        role: "client",
+        projects,
+        owner: req.user._id,
+      });
+      const owner = await User.findById(req.user._id);
+      owner.client.push(client._id);
+      await owner.save();
+      // create a new client onboarding document
+      const clientOnboarding = await ClientOnboarding.create({
+        createdBy: req.user._id,
+        client: client._id,
+      });
+      // save the clientOnboarding id in the client document
+      client.clientOnboarding = clientOnboarding._id;
+      await client.save();
+      // Handle all the files
+      const filesMeta = JSON.parse(fields.filesMeta);
+      // console.log(filesMeta, "filesMeta");
+      filesMeta.forEach((element) => {
+        const fileName = uuidv4();
+        fs.readFile(
+          files[element.fileKey].filepath,
+          async function (err, data) {
+            let filePayload = {
+              fileName: fileName + ".pdf",
+              buffer: data,
+              fileType: files[element.fileKey].mimetype,
+            };
+            // Upload the file to S3
+            const uploadData = await uploadFileS3(filePayload);
+            console.log(uploadData);
+            // TODO: append the file to the clientOnboarding document list
+            clientOnboarding.files.push({
+              title: element.title,
+              description: element.description,
+              url: uploadData.Location,
+            });
+            await clientOnboarding.save();
+            fs.unlink(files[element.fileKey].filepath, function (err) {
+              if (err) {
+                console.error(err);
+              }
+            });
+          }
+        );
+      });
+      return res
+        .status(201)
+        .json({ message: "Client Onboard Successful", client });
     });
-    await client.save();
-    const owner = await User.findById(req.user._id);
-    owner.client.push(client._id);
-    await owner.save();
-    return res
-      .status(201)
-      .json({ message: "Client created successfully", client });
   } catch (error) {
     console.log(error);
+    //TODO: save the error in a log file
     return res.status(500).json({ error: error, message: error.message });
   }
 };
@@ -53,11 +106,20 @@ exports.getClients = async (req, res) => {
     clients = clients.slice(startIndex, startIndex + limit);
     let clientData = [];
     for (let i = 0; i < clients.length; i++) {
-      const user = await User.findById(clients[i]);
+      const user = await User.findById(clients[i]).populate([
+        {
+          path: "projects",
+          select: "name project_id",
+        },
+        {
+          path: "clientOnboarding",
+        },
+      ]);
       clientData.push(user);
     }
     return res.status(200).json({ clientData });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error: error, message: error.message });
   }
 };
