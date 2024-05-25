@@ -33,7 +33,7 @@ exports.login = async (req, res) => {
     return res.status(200).json({ message: "Logged in successfully", token , user});
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: error, message: error.message });
+    return res.status(500).json({ error: error, message: error?.message });
   }
 };
 
@@ -46,7 +46,7 @@ exports.updateProfile = async (req, res) => {
         const user = await User.findByIdAndUpdate(req.user._id, { name, email, phoneNumber }, { new: true});
         return res.status(200).json({ message: "Profile updated successfully", user });
     } catch (error) {
-        return res.status(500).json({ error: error, message: error.message });
+        return res.status(500).json({ error: error, message: error?.message });
     }
 }
 
@@ -64,7 +64,7 @@ exports.changePassword = async (req, res) => {
         await user.save();
         return res.status(200).json({ message: "Password changed successfully" });
     } catch (error) {
-        return res.status(500).json({ error: error, message: error.message });
+        return res.status(500).json({ error: error, message: error?.message });
     }
 }
 
@@ -76,7 +76,7 @@ exports.getProfile = async (req, res) => {
         const user = await User.findById(req.user._id);
         return res.status(200).json({ user });
     } catch (error) {
-        return res.status(500).json({ error: error, message: error.message });
+        return res.status(500).json({ error: error, message: error?.message });
     }
 }
 

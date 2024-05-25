@@ -12,7 +12,7 @@ exports.crateProject = async (req, res) => {
       return res.status(201).json({ message: "Project created successfully", project });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ error:error, message: error.message });
+      return res.status(500).json({ error:error, message: error?.message });
     }
   }
   
@@ -28,7 +28,7 @@ exports.crateProject = async (req, res) => {
       const projectsWithTaskCount = projectsWithTaskCounts(projects);
       return res.status(200).json({ projects });
     } catch (error) {
-      return res.status(500).json({ error:error, message: error.message });
+      return res.status(500).json({ error:error, message: error?.message });
     }
   }
   

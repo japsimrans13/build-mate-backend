@@ -14,7 +14,7 @@ exports.welcomeEmail = async (req, res) => {
 
     return res.status(201).json({ message: "User created successfully" });
   } catch (error) {
-    return res.status(500).json({ error:error, message: error.message });
+    return res.status(500).json({ error:error, message: error?.message });
   }
 };
 
@@ -32,7 +32,7 @@ exports.fileUpload = async (req, res) => {
     return res.status(201).json({ message: "File uploaded successfully" });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error:error, message: error.message });
+    return res.status(500).json({ error:error, message: error?.message });
   }
 }
 
@@ -42,6 +42,6 @@ exports.clientOnboardingData = async (req, res) => {
     const clientOnboardingData = await ClientOnboarding.find();
     return res.status(200).json({ clientOnboardingData });
   } catch (error) {
-    return res.status(500).json({ error:error, message: error.message });
+    return res.status(500).json({ error:error, message: error?.message });
   }
 }

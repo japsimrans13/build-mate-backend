@@ -32,7 +32,7 @@ exports.createStaff = async (req, res) => {
       .status(201)
       .json({ message: "Staff created successfully", user });
   } catch (error) {
-    return res.status(500).json({ error: error, message: error.message });
+    return res.status(500).json({ error: error, message: error?.message });
   }
 };
 
@@ -64,6 +64,6 @@ exports.getStaff = async (req, res) => {
     }
     return res.status(200).json({ staffData });
   } catch (error) {
-    return res.status(500).json({ error: error, message: error.message });
+    return res.status(500).json({ error: error, message: error?.message });
   }
 };

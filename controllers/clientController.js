@@ -15,7 +15,15 @@ exports.createClient = async (req, res) => {
       // console.log(fields);
       // console.log(files);
       const { name, email, companyName, phoneNumber, password } = fields;
-      const projects = fields.projects.split(",");
+      if (!name || !email || !companyName || !phoneNumber || !password) {
+        return res.status(400).json({ message: "Please fill all required fields" });
+      }
+      let projects;
+      if (fields.projects) {
+      // Split the projects string into an array
+      projects = fields.projects.split(",");
+      }
+      
       // create a new client
       const domainName = req.user.domainName;
       const client = await User.create({
@@ -78,7 +86,7 @@ exports.createClient = async (req, res) => {
   } catch (error) {
     console.log(error);
     //TODO: save the error in a log file
-    return res.status(500).json({ error: error, message: error.message });
+    return res.status(500).json({ error: error, message: error?.message });
   }
 };
 
@@ -120,6 +128,6 @@ exports.getClients = async (req, res) => {
     return res.status(200).json({ clientData });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: error, message: error.message });
+    return res.status(500).json({ error: error, message: error?.message });
   }
 };

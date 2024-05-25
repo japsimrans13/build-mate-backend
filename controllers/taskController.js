@@ -18,7 +18,7 @@ exports.createTask = async (req, res) => {
     });
     return res.status(201).json({ message: "Task created successfully", task });
   } catch (error) {
-    return res.status(500).json({ error: error, message: error.message });
+    return res.status(500).json({ error: error, message: error?.message });
   }
 };
 
@@ -38,7 +38,7 @@ exports.getAllTasks = async (req, res) => {
       .skip(startIndex);
     return res.status(200).json({ tasks });
   } catch (error) {
-    return res.status(500).json({ error: error, message: error.message });
+    return res.status(500).json({ error: error, message: error?.message });
   }
 };
 
@@ -58,7 +58,7 @@ exports.getCreatedTasks = async (req, res) => {
       .skip(startIndex);
     return res.status(200).json({ tasks });
   } catch (error) {
-    return res.status(500).json({ error: error, message: error.message });
+    return res.status(500).json({ error: error, message: error?.message });
   }
 };
 
@@ -78,7 +78,7 @@ exports.getAssignedTasks = async (req, res) => {
       .skip(startIndex);
     return res.status(200).json({ tasks });
   } catch (error) {
-    return res.status(500).json({ error: error, message: error.message });
+    return res.status(500).json({ error: error, message: error?.message });
   }
 };
 
@@ -106,6 +106,6 @@ exports.updateTask = async (req, res) => {
     await task.save();
     return res.status(200).json({ message: "Task updated successfully", task });
   } catch (error) {
-    return res.status(500).json({ error: error, message: error.message });
+    return res.status(500).json({ error: error, message: error?.message });
   }
 }

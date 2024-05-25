@@ -22,7 +22,7 @@ try {
     .status(200)
     .json({ message: "User updated successfully" });
 } catch (error) {
-  return res.status(500).json({ error: error, message: error.message });
+  return res.status(500).json({ error: error, message: error?.message });
 }
 };
 

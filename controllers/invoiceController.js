@@ -7,7 +7,7 @@ exports.createInvoice = async (req, res) => {
       const invoice = await Invoice.create({ amount, project, description, dueDate, owner: req.user._id});
       return res.status(201).json({ message: "Invoice created successfully", invoice });
     } catch (error) {
-      return res.status(500).json({ error:error, message: error.message });
+      return res.status(500).json({ error:error, message: error?.message });
     }
   }
   
@@ -22,6 +22,6 @@ exports.createInvoice = async (req, res) => {
       const invoices = await Invoice.find({ owner: req.user._id }).populate('client').limit(limit).skip(startIndex);
       return res.status(200).json({ invoices });
     } catch (error) {
-      return res.status(500).json({ error:error, message: error.message });
+      return res.status(500).json({ error:error, message: error?.message });
     }
   }

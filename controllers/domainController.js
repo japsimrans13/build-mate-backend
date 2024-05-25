@@ -7,6 +7,9 @@ exports.isDomainActive = async (req, res) => {
     const domainName = origin.split('//')[1].split(':')[0];
     const subDomain = domainName.split('.')[0];
     let domain;
+    if (subDomain == 'cloud'){
+      return res.status(400).json({ message: "You will be redirected to Registration Page in 5 Seconds" });
+    }
     if (subDomain == 'localhost'){
       return res.status(200).json({ message: "Working on dev server", domain: {subDomain: 'localhost', isOnHold: false}});
     }
@@ -20,6 +23,6 @@ exports.isDomainActive = async (req, res) => {
       .json({ message: "Domain Exists", domain});
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: error, message: error.message });
+    return res.status(500).json({ error: error, message: error?.message });
   }
 };
