@@ -5,7 +5,7 @@ exports.createTask = async (req, res) => {
   try {
     const { name, description, project, dueDate, assignedTo } = req.body;
     const taskCount = await Task.countDocuments({ owner: req.user._id });
-    const task_id = `TSK-${domain}-${taskCount}`;
+    const task_id = `TSK-${req.user.domainName}-${taskCount}`;
     const task = await Task.create({
       name,
       task_id,
