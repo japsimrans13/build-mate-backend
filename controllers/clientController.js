@@ -57,7 +57,7 @@ exports.createClient = async (req, res) => {
           files[element.fileKey].filepath,
           async function (err, data) {
             let filePayload = {
-              fileName: fileName + ".pdf",
+              fileName: fileName,
               buffer: data,
               fileType: files[element.fileKey].mimetype,
             };
@@ -125,7 +125,7 @@ exports.getClients = async (req, res) => {
       ]);
       clientData.push(user);
     }
-    return res.status(200).json({ clientData });
+    return res.status(200).json({ clientData , totalClients: owner.client.length });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: error, message: error?.message });

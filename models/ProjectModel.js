@@ -10,6 +10,8 @@ const projectSchema = new mongoose.Schema(
     staff: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     client: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Task" }],
+    // isTrash is used to soft delete the project
+    isTrash: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

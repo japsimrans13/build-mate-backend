@@ -1,5 +1,5 @@
 const Task = require("../models/TaskModel");
-
+const Project = require("../models/ProjectModel");
 // Task APIs
 exports.createTask = async (req, res) => {
   try {
@@ -36,23 +36,27 @@ exports.getAllTasks = async (req, res) => {
     const startIndex = (page - 1) * limit;
     // Get all the tasks
     let tasks;
+    let totalTasks;
     if (req.user.role === "owner") {
       tasks = await Task.find({domainName: req.user.domainName, isTrash: false})
-        .populate("project")
-        .populate("createdBy")
-        .populate("assignedTo")
+        .populate("project", "project_id name description")
+        .populate("createdBy" , "name email")
+        .populate("assignedTo", "name email")
         .limit(limit)
         .skip(startIndex);
+      totalTasks = await Task.countDocuments({domainName: req.user.domainName, isTrash: false});
     } else {
     tasks = await Task.find({$or: [{ createdBy: req.user._id }, { assignedTo: req.user._id }], isTrash: false})
       .populate('project', 'project_id name description')
-      .populate('createdBy', 'email name')
-      .populate('assignedTo', 'email name')
+      .populate('createdBy', 'name email')
+      .populate('assignedTo', 'name email')
       .limit(limit)
       .skip(startIndex);
+    totalTasks = await Task.countDocuments({$or: [{ createdBy: req.user._id }, { assignedTo: req.user._id }], isTrash: false});
     }
-    return res.status(200).json({ tasks });
+    return res.status(200).json({ tasks, totalTasks });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error: error, message: error?.message });
   }
 };
@@ -67,22 +71,25 @@ exports.getTrashTasks = async (req, res) => {
     const startIndex = (page - 1) * limit;
     // Get all the tasks
     let tasks;
+    let totalTrashTasks;
     if (req.user.role === "owner") {
       tasks = await Task.find({domainName: req.user.domainName, isTrash: true})
-        .populate("project")
-        .populate("createdBy")
-        .populate("assignedTo")
+      .populate('project', 'project_id name description')
+      .populate('createdBy', 'name email')
+      .populate('assignedTo', 'name email')
         .limit(limit)
         .skip(startIndex);
+      totalTrashTasks = await Task.countDocuments({domainName: req.user.domainName, isTrash: true});
     } else {
       tasks = await Task.find({$or: [{ createdBy: req.user._id }, { assignedTo: req.user._id }], isTrash: true})
-        .populate("project")
-        .populate("createdBy")
-        .populate("assignedTo")
+      .populate('project', 'project_id name description')
+      .populate('createdBy', 'name email')
+      .populate('assignedTo', 'name email')
         .limit(limit)
         .skip(startIndex);
+        totalTrashTasks = await Task.countDocuments({$or: [{ createdBy: req.user._id }, { assignedTo: req.user._id }], isTrash: true});
     }
-    return res.status(200).json({ tasks });
+    return res.status(200).json({ tasks, totalTrashTasks });
   } catch (error) {
     return res.status(500).json({ error: error, message: error?.message });
   }
@@ -156,10 +163,10 @@ exports.updateTask = async (req, res) => {
   }
 }
 
+// Soft delete a task
 exports.deleteTask = async (req, res) => {
   try {
     // delete the task if user has created the task
-
     const task = await Task.findById(req.params.id);
     if (!task) {
       return res.status(400).json({ message: "Task not found" });
@@ -169,6 +176,10 @@ exports.deleteTask = async (req, res) => {
     }
     task.isTrash = true;
     await task.save();
+    // remove this task from the project
+    const project = await Project.findById(task.project);
+    project.tasks = project.tasks.filter(task => task._id.toString() !== req.params.id);
+    await project.save();
     return res.status(200).json({ message: "Task deleted successfully" });
   }
   catch (error) {

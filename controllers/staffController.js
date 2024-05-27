@@ -12,7 +12,7 @@ exports.createStaff = async (req, res) => {
     const { name, email, password, phoneNumber, projects } = req.body;
     const companyName = req.user.companyName;
     const domainName = req.user.domainName;
-    const user = await User.create({
+    const staff = await User.create({
       name,
       email,
       password,
@@ -23,14 +23,14 @@ exports.createStaff = async (req, res) => {
       projects,
       owner: req.user._id,
     });
-    await user.save();
+    await staff.save();
     const owner = await User.findById(req.user._id);
-    owner.staff.push(user._id);
+    owner.staff.push(staff._id);
     // console.log(owner);
     await owner.save();
     return res
       .status(201)
-      .json({ message: "Staff created successfully", user });
+      .json({ message: "Staff created successfully", staff });
   } catch (error) {
     return res.status(500).json({ error: error, message: error?.message });
   }
@@ -62,7 +62,7 @@ exports.getStaff = async (req, res) => {
       const user = await User.findById(staff[i]);
       staffData.push(user);
     }
-    return res.status(200).json({ staffData });
+    return res.status(200).json({ staffData, totalStaff: owner.staff.length });
   } catch (error) {
     return res.status(500).json({ error: error, message: error?.message });
   }
