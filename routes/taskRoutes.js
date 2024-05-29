@@ -7,6 +7,8 @@ router.post('/create-task', taskController.createTask);
 router.get('/all-tasks', taskController.getAllTasks);
 router.get('/assigned-tasks', taskController.getAssignedTasks);
 router.get('/created-tasks', taskController.getCreatedTasks);
+// Update Task routes
+router.put('/update-task/:id', taskController.updateTask);
 // Trash Tasks routes
 router.delete('/delete-task/:id', taskController.deleteTask);
 router.get('/get-trash-tasks', taskController.getTrashTasks);
