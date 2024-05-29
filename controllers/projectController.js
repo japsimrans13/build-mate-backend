@@ -9,6 +9,7 @@ exports.createProject = async (req, res) => {
     const projectCount = await Project.countDocuments({ owner: req.user._id });
     const project_id = `PROJ-${domain}-${projectCount}`;
     const project = await Project.create({ project_id, name, description, owner: req.user._id, staff, client, task});
+    // TODO: save project 
     return res.status(201).json({ message: "Project created successfully", project });
   } catch (error) {
     console.log(error);
@@ -64,7 +65,7 @@ exports.deleteProject = async (req, res) => {
       return res.status(400).json({ message: "Project not found" });
     }
     if (project.owner.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: "You are not authorized to perform this action" });
+      return res.status(403).json({ message: "You are not authorized to perform this action" });
     }
     project.isTrash = true;
     await project.save();
@@ -80,7 +81,7 @@ exports.getTrashProjects = async (req, res) => {
   try {
     // Check if the user has role owner
     if (req.user.role !== 'owner') {
-      return res.status(401).json({ message: "You are not authorized to perform this action" });
+      return res.status(403).json({ message: "You are not authorized to perform this action" });
     }
     const page = parseInt(req.query.page) || 1; // Default to page 1
     const limit = parseInt(req.query.limit) || 10; // Default limit to 10
