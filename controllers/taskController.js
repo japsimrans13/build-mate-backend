@@ -177,9 +177,12 @@ exports.deleteTask = async (req, res) => {
     task.isTrash = true;
     await task.save();
     // remove this task from the project
-    const project = await Project.findById(task.project);
-    project.tasks = project.tasks.filter(task => task._id.toString() !== req.params.id);
-    await project.save();
+    
+    if (task.project) {
+      const project = await Project.findById(task.project);
+      project.tasks = project.tasks.filter(task => task._id.toString() !== req.params.id);
+      await project.save();
+    }
     return res.status(200).json({ message: "Task deleted successfully" });
   }
   catch (error) {
