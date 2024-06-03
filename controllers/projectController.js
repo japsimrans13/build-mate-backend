@@ -26,7 +26,7 @@ exports.getProjects = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10; // Default limit to 10
     // Calculate the starting index of pagination
     const startIndex = (page - 1) * limit;
-    const projects = await Project.find({ owner: req.user._id, isTrash: false }).populate('owner', 'name email').populate('staff', 'name email').populate('client', 'name email').populate('task', 'task_id name').limit(limit).skip(startIndex);
+    const projects = await Project.find({ owner: req.user._id, isTrash: false }).populate('owner', 'name email').populate('staff', 'name email').populate('client', 'name email').populate('task', 'task_id name').limit(limit).skip(startIndex).sort({ updatedAt: -1 });
     const totalProjects = await Project.countDocuments({ owner: req.user._id, isTrash: false });
     const projectsWithTaskMeta = projectsWithTaskCounts(projects);
     return res.status(200).json({ projects: projectsWithTaskMeta, totalProjects});
@@ -90,7 +90,8 @@ exports.getTrashProjects = async (req, res) => {
     const projects = await Project.find({ isTrash: true, owner: req.user._id })
       .populate('owner', 'name email').populate('staff', 'name email').populate('client', 'name email').populate('task', 'task_id name')
       .limit(limit)
-      .skip(startIndex);
+      .skip(startIndex)
+      .sort({ updatedAt: -1 });
     const totalTrashProjects = await Project.countDocuments({ isTrash: true, owner: req.user._id });
     return res.status(200).json({ projects, totalTrashProjects });
   } catch (error) {

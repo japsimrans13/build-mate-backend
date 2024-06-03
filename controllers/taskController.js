@@ -20,6 +20,17 @@ exports.createTask = async (req, res) => {
       createdBy: req.user._id,
       assignedTo,
     });
+    // Add this task to the project
+    if (project) {
+      const projectData = await Project.findById(project);
+      if (!projectData) {
+        console.log("Project not found");
+        // TODO: if the project is not found, the ID must not be shown to the user
+        // This should not happen, log this as a bug
+      }
+      projectData.tasks.push(task._id);
+      await projectData.save();
+    }
     return res.status(201).json({ message: "Task created successfully", task });
   } catch (error) {
     return res.status(500).json({ error: error, message: error?.message });
@@ -43,7 +54,8 @@ exports.getAllTasks = async (req, res) => {
         .populate("createdBy" , "name email")
         .populate("assignedTo", "name email")
         .limit(limit)
-        .skip(startIndex);
+        .skip(startIndex)
+        .sort({ updatedAt: -1 });
       totalTasks = await Task.countDocuments({domainName: req.user.domainName, isTrash: false});
     } else {
     tasks = await Task.find({$or: [{ createdBy: req.user._id }, { assignedTo: req.user._id }], isTrash: false})
@@ -51,7 +63,8 @@ exports.getAllTasks = async (req, res) => {
       .populate('createdBy', 'name email')
       .populate('assignedTo', 'name email')
       .limit(limit)
-      .skip(startIndex);
+      .skip(startIndex)
+      .sort({ updatedAt: -1 });
     totalTasks = await Task.countDocuments({$or: [{ createdBy: req.user._id }, { assignedTo: req.user._id }], isTrash: false});
     }
     return res.status(200).json({ tasks, totalTasks });
@@ -78,7 +91,8 @@ exports.getTrashTasks = async (req, res) => {
       .populate('createdBy', 'name email')
       .populate('assignedTo', 'name email')
         .limit(limit)
-        .skip(startIndex);
+        .skip(startIndex)
+        .sort({ updatedAt: -1 });
       totalTrashTasks = await Task.countDocuments({domainName: req.user.domainName, isTrash: true});
     } else {
       tasks = await Task.find({$or: [{ createdBy: req.user._id }, { assignedTo: req.user._id }], isTrash: true})
@@ -86,7 +100,8 @@ exports.getTrashTasks = async (req, res) => {
       .populate('createdBy', 'name email')
       .populate('assignedTo', 'name email')
         .limit(limit)
-        .skip(startIndex);
+        .skip(startIndex)
+        .sort({ updatedAt: -1 });
         totalTrashTasks = await Task.countDocuments({$or: [{ createdBy: req.user._id }, { assignedTo: req.user._id }], isTrash: true});
     }
     return res.status(200).json({ tasks, totalTrashTasks });

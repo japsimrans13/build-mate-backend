@@ -51,6 +51,7 @@ exports.getStaff = async (req, res) => {
 
     // Get owner from mongoose rather than req.user
     const owner = await User.findById(req.user._id);
+    // TODO: get it from USer.find({'owner': req.user._id, 'role': 'staff'})
     let staff = owner.staff;
     if (staff.length === 0) {
       return res.status(200).json({ staff: [] });
