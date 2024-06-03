@@ -162,7 +162,7 @@ exports.updateTask = async (req, res) => {
       // TODO: add a logger with hacking attempt and save the user id and task id and time
       return res.status(401).json({ message: "You are not authorized to perform this action" });
     }
-    const { name, description, status, dueDate, assignedTo } = req.body;
+    const { name, description, status, dueDate, project, assignedTo } = req.body;
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
@@ -170,6 +170,7 @@ exports.updateTask = async (req, res) => {
     task.description = description;
     task.status = status;
     task.dueDate = dueDate;
+    task.project = project;
     task.assignedTo = assignedTo;
     await task.save();
     return res.status(200).json({ message: "Task updated successfully", task });
