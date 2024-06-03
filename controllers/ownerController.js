@@ -10,7 +10,7 @@ try {
   // Update only if the owner is req.user._id
   if (req.user.role !== "owner") {
     return res
-      .status(401)
+      .status(403)
       .json({ message: "You are not authorized to perform this action" });
   }
   // TODO: test this API

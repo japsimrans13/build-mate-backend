@@ -6,7 +6,7 @@ exports.createStaff = async (req, res) => {
   try {
     if (req.user.role !== "owner") {
       return res
-        .status(401)
+        .status(403)
         .json({ message: "You are not authorized to perform this action" });
     }
     const { name, email, password, phoneNumber, projects } = req.body;
@@ -41,7 +41,7 @@ exports.getStaff = async (req, res) => {
     // Only the owner can get the staff members
     if (req.user.role !== "owner") {
       return res
-        .status(401)
+        .status(403)
         .json({ message: "You are not authorized to perform this action" });
     }
     const page = parseInt(req.query.page) || 1; // Default to page 1

@@ -95,7 +95,7 @@ exports.getClients = async (req, res) => {
     // Only the owner can get the clients
     if (req.user.role !== "owner") {
       return res
-        .status(401)
+        .status(403)
         .json({ message: "You are not authorized to perform this action" });
     }
     const page = parseInt(req.query.page) || 1; // Default to page 1
