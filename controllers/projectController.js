@@ -120,6 +120,35 @@ exports.deleteProject = async (req, res) => {
     await project.save();
     // soft delete all the tasks associated with the project
     await Task.updateMany({ project: req.params.id }, { isTrash: true });
+    // remove the project from the staff
+    if (project.staff) {
+      project.staff.forEach(async (staffId) => {
+        const staff = await User.findById(staffId);
+        if (!staff) {
+          // TODO: if the staff is not found, the ID must not be shown to the user
+          // This should not happen, log this as a bug
+          console.log("Staff not found");
+        }
+        staff.projects = staff.projects.filter(project => project._id.toString() !== req.params.id);
+        await staff.save();
+      });
+    }
+
+    // remove the project from the client
+    if (project.client) {
+      project.client.forEach(async (clientId) => {
+        const client = await User.findById(clientId);
+        if (!client) {
+          // TODO: if the client is not found, the ID must not be shown to the user
+          // This should not happen, log this as a bug
+          console.log("Client not found");
+        }
+        client.projects = client.projects.filter(project => project._id.toString() !== req.params.id);
+        await client.save();
+      });
+    }
+
+
     return res.status(200).json({ message: "Project deleted successfully" });
   } catch (error) {
     return res.status(500).json({ error:error, message: error?.message });
