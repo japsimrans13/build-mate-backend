@@ -40,6 +40,20 @@ exports.createClient = async (req, res) => {
       const owner = await User.findById(req.user._id);
       owner.client.push(client._id);
       await owner.save();
+      // add the client to the project
+      if (projects) {
+        projects.forEach(async (projectId) => {
+        const projectData = await Project.findById(projectId);
+        if (!projectData) {
+          console.log("Project not found");
+          // TODO: if the project is not found, the ID must not be shown to the user
+          // This should not happen, log this as a bug
+        }
+        projectData.client.push(client._id);
+        await projectData.save();
+      });
+      }
+      
       // create a new client onboarding document
       const clientOnboarding = await ClientOnboarding.create({
         createdBy: req.user._id,

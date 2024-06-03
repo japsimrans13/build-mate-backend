@@ -187,7 +187,7 @@ exports.deleteTask = async (req, res) => {
       return res.status(400).json({ message: "Task not found" });
     }
     if (task.createdBy.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: "You are not authorized to perform this action" });
+      return res.status(403).json({ message: "You are not authorized to perform this action" });
     }
     task.isTrash = true;
     await task.save();
@@ -204,4 +204,26 @@ exports.deleteTask = async (req, res) => {
     return res.status(500).json({ error: error, message: error?.message });
   }
 }
-    
+
+exports.restoreTask = async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+    if (!task) {
+      return res.status(400).json({ message: "Task not found" });
+    }
+    if (task.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You are not authorized to perform this action" });
+    }
+    task.isTrash = false;
+    await task.save();
+    // Add the task back to the project
+    if (task.project) {
+      const project = await Project.findById(task.project);
+      project.tasks.push(task._id);
+      await project.save();
+    }
+    return res.status(200).json({ message: "Task restored successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: error, message: error?.message });
+  }
+}

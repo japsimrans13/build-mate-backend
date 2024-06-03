@@ -11,6 +11,7 @@ router.get('/created-tasks', taskController.getCreatedTasks);
 router.put('/update-task/:id', taskController.updateTask);
 // Trash Tasks routes
 router.delete('/delete-task/:id', taskController.deleteTask);
+router.post('/restore-task/:id', taskController.restoreTask);
 router.get('/get-trash-tasks', taskController.getTrashTasks);
 
 
