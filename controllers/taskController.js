@@ -160,7 +160,7 @@ exports.updateTask = async (req, res) => {
     }
     if (task.createdBy.toString() !== req.user._id.toString() || !task.assignedTo.includes(req.user._id)) {
       // TODO: add a logger with hacking attempt and save the user id and task id and time
-      return res.status(401).json({ message: "You are not authorized to perform this action" });
+      return res.status(403).json({ message: "You are not authorized to perform this action" });
     }
     const { name, description, status, dueDate, project, assignedTo } = req.body;
     if (!task) {
