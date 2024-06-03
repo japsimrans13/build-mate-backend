@@ -9,7 +9,33 @@ exports.createProject = async (req, res) => {
     const projectCount = await Project.countDocuments({ owner: req.user._id });
     const project_id = `PROJ-${domain}-${projectCount}`;
     const project = await Project.create({ project_id, name, description, owner: req.user._id, staff, client, task});
-    // TODO: save project 
+    // Add this project to the staff
+    if (staff) {
+      staff.forEach(async (staffId) => {
+        const staffData = await User.findById(staffId);
+        if (!staffData) {
+          // TODO: if the staff is not found, the ID must not be shown to the user
+          // This should not happen, log this as a bug
+          console.log("Staff not found");
+        }
+        staffData.projects.push(project._id);
+        await staffData.save();
+      });
+    }
+    // Add this project to the client
+    if (client) {
+      client.forEach(async (clientId) => {
+        const clientData = await User.findById(clientId);
+        if (!clientData) {
+          // TODO: if the client is not found, the ID must not be shown to the user
+          // This should not happen, log this as a bug
+          console.log("Client not found");
+        }
+        clientData.projects.push(project._id);
+        await clientData.save();
+      });
+    }
+
     return res.status(201).json({ message: "Project created successfully", project });
   } catch (error) {
     console.log(error);
@@ -26,7 +52,7 @@ exports.getProjects = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10; // Default limit to 10
     // Calculate the starting index of pagination
     const startIndex = (page - 1) * limit;
-    const projects = await Project.find({ owner: req.user._id, isTrash: false }).populate('owner', 'name email').populate('staff', 'name email').populate('client', 'name email').populate('task', 'task_id name').limit(limit).skip(startIndex).sort({ updatedAt: -1 });
+    const projects = await Project.find({ owner: req.user._id, isTrash: false }).populate('owner', 'name email').populate('staff', 'name email').populate('client', 'name email').populate('tasks', 'task_id name').limit(limit).skip(startIndex).sort({ updatedAt: -1 });
     const totalProjects = await Project.countDocuments({ owner: req.user._id, isTrash: false });
     const projectsWithTaskMeta = projectsWithTaskCounts(projects);
     return res.status(200).json({ projects: projectsWithTaskMeta, totalProjects});
