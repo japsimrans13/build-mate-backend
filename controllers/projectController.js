@@ -82,6 +82,29 @@ const projectsWithTaskCounts = (projects) => {
     };
 })};
 
+// Controller to update the project
+exports.updateProject = async (req, res) => {
+  try {
+    const { name, description, staff, client, tasks} = req.body;
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+      return res.status(400).json({ message: "Project not found" });
+    }
+    if (project.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You are not authorized to perform this action" });
+    }
+    project.name = name;
+    project.description = description;
+    project.staff = staff;
+    project.client = client;
+    project.tasks = tasks;
+    await project.save();
+    return res.status(200).json({ message: "Project updated successfully", project });
+  } catch (error) {
+    return res.status(500).json({ error:error, message: error?.message });
+  }
+}
+
 // This controller will soft delete the project and all the tasks associated with it
 exports.deleteProject = async (req, res) => {
   // only owner can delete the project
@@ -98,6 +121,25 @@ exports.deleteProject = async (req, res) => {
     // soft delete all the tasks associated with the project
     await Task.updateMany({ project: req.params.id }, { isTrash: true });
     return res.status(200).json({ message: "Project deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ error:error, message: error?.message });
+  }
+}
+
+exports.restoreProject = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+      return res.status(400).json({ message: "Project not found" });
+    }
+    if (project.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You are not authorized to perform this action" });
+    }
+    project.isTrash = false;
+    await project.save();
+    // restore all the tasks associated with the project
+    await Task.updateMany({ project: req.params.id }, { isTrash: false });
+    return res.status(200).json({ message: "Project restored successfully" });
   } catch (error) {
     return res.status(500).json({ error:error, message: error?.message });
   }
