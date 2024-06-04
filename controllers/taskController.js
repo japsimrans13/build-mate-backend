@@ -1,5 +1,6 @@
 const Task = require("../models/TaskModel");
 const Project = require("../models/ProjectModel");
+const ObjectId = require("mongoose").Types.ObjectId;
 // Task APIs
 exports.createTask = async (req, res) => {
   try {
@@ -154,13 +155,19 @@ exports.getAssignedTasks = async (req, res) => {
 exports.updateTask = async (req, res) => {
   try {
     // check if the user has created the task or user is in assignedTo array
-    const task = await Task.findById(req.params.id);
+    const task = await Task.findOne({
+      $and: [
+        {
+          $or: [
+            { createdBy: req.user._id },
+            { assignedTo: { $in: [ObjectId(req.user._id)] } },
+          ],
+        },
+        { _id: req.params.id , isTrash: false},
+      ],
+    })
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
-    }
-    if (task.createdBy.toString() !== req.user._id.toString() || !task.assignedTo.includes(req.user._id)) {
-      // TODO: add a logger with hacking attempt and save the user id and task id and time
-      return res.status(403).json({ message: "You are not authorized to perform this action" });
+      return res.status(404).json({ message: "Task not found or you are not authorized to perform this action" });
     }
     const { name, description, status, dueDate, project, assignedTo } = req.body;
     if (!task) {
@@ -170,7 +177,10 @@ exports.updateTask = async (req, res) => {
     task.description = description;
     task.status = status;
     task.dueDate = dueDate;
-    task.project = project;
+    // check if the project is valid and not a empty string
+    if (project) {
+      task.project = project;
+    }
     task.assignedTo = assignedTo;
     await task.save();
     return res.status(200).json({ message: "Task updated successfully", task });

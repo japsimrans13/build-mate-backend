@@ -1,14 +1,15 @@
 const Project = require('../models/ProjectModel');
 const Task = require('../models/TaskModel');
+const User = require('../models/UserModel');
 // Projects APIs
 exports.createProject = async (req, res) => {
   try {
-    const { name, description, staff, client, task} = req.body;
+    const { name, description, staff, client, tasks} = req.body;
     // TODO: add a project capping to eg: 100 or 1000 according to their plan
     const domain = req.user.domainName;
     const projectCount = await Project.countDocuments({ owner: req.user._id });
     const project_id = `PROJ-${domain}-${projectCount}`;
-    const project = await Project.create({ project_id, name, description, owner: req.user._id, staff, client, task});
+    const project = await Project.create({ project_id, name, description, owner: req.user._id, staff, client, tasks});
     // Add this project to the staff
     if (staff) {
       staff.forEach(async (staffId) => {
@@ -86,9 +87,10 @@ const projectsWithTaskCounts = (projects) => {
 exports.updateProject = async (req, res) => {
   try {
     const { name, description, staff, client, tasks} = req.body;
-    const project = await Project.findById(req.params.id);
+    // check if the req.user is the owner of the project
+    const project = await Project.findOne({ _id: req.params.id, owner: req.user._id, isTrash: false});
     if (!project) {
-      return res.status(400).json({ message: "Project not found" });
+      return res.status(400).json({ message: "Project not found." });
     }
     if (project.owner.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "You are not authorized to perform this action" });
