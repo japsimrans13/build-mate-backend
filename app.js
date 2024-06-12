@@ -45,6 +45,9 @@ app.use("/api/task", authMiddleware, taskRoutes);
 app.use("/api/document", authMiddleware, documentRoutes);
 app.use("/api/domain", domainRoutes);
 app.use("/api/test", testRoutes);
+app.use("/ping", (req, res) => {
+  return res.status(200).json({ message: "pong" });
+});
 
 const io = require("socket.io")(8002, {
   cors: {
