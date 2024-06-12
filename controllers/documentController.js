@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Document = require("../models/DocumentModel");
-
+const net = require('net');
+const clients = new Set(); // Set to store all connected clients
 const findDocument = async (id) => {
   if (id == null) return;
   // TODO check if its a valid owner or a valid user
@@ -16,29 +17,50 @@ const findDocument = async (id) => {
 // Socket Connection for Realtime Documents
 exports.documentSocket = (io) => {
   io.on("connection", (socket) => {
+    // TODO: check if the user has access to the document
+    // TODO: if the user is already connected, do not connect again
+
+    if (clients.has(socket)) {
+      console.log("User already connected");
+    }else{
+      // clients.add(socket);
+    console.log("Socket ID ", socket.id);
+
     socket.on("get-document", async (documentId) => {
       const document = await findDocument(documentId);
       if (document == null) {
         socket.emit("document-not-found");
       } else {
+      // console.log("Document ", document);
       socket.join(documentId);
       socket.emit("load-document", document.content);
       }
   
       socket.on("send-changes", (delta) => {
-        socket.broadcast.to(documentId).emit("receive-changes", delta);
+        // Boadcast changes to all users in the room except the sender
+        // console.log("Delta ", delta);
+
+        // socket.broadcast.to(documentId).emit("receive-changes", delta);
+        // broadcast to the clients in the room
+        socket.to(documentId).emit("receive-changes", delta);
+
+
+        // socket.broadcast.to(documentId).emit("receive-changes", delta);
+        // socket.to(documentId).emit("receive-changes", delta);
       });
   
       socket.on("save-document", async (content) => {
-        console.log("Content ", content);
+        // console.log("Save Content ", content); 
         // TODO: make this abstract
         await Document.findByIdAndUpdate(documentId, { content });
       });
     });
-  });
+  }
+});
   
   io.on("disconnect", (socket) => {
     console.log("User disconnected");
+    clients.delete(socket);
   });
   }
 // Rest APIs

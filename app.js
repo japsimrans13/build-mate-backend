@@ -17,7 +17,7 @@ const documentRoutes = require("./routes/documentRoutes");
 const domainRoutes = require("./routes/domainRoutes");
 const testRoutes = require("./routes/testRoutes");
 const {documentSocket} = require("./controllers/documentController");
-const { authMiddleware } = require("./middlewares/authMiddleware");
+const { authMiddleware, socketAuthMiddleware } = require("./middlewares/authMiddleware");
 
 // MongoDB connection
 mongoose
@@ -40,6 +40,7 @@ const io = new Server(server, {
   },
 
 });
+io.use(socketAuthMiddleware);
 documentSocket(io);
 
 app.use(cors());

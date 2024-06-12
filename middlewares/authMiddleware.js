@@ -19,10 +19,29 @@ try {
         return res.status(401).json({ message: 'Your account is on hold. Please contact the admin' });
     }
     req.user = user;
-    req.token = token;
     next();
 } catch (error) {
     return res.status(401).json({ message: 'Please authenticate' });
+    }
+}
+
+exports.socketAuthMiddleware = async (socket, next) => {
+try {
+    const token = socket.handshake.auth.token;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findOne({ _id: decoded.id });
+    // const user = await User.findOne({ _id: decoded.id, token: token })
+    if (!user) {
+        return next(new Error('Please authenticate'));
+    }
+    if (user.isOnHold) {
+        return next(new Error('Your account is on hold. Please contact the admin'));
+    }
+    socket.user = user;
+    next();
+}
+catch (error) {
+    return next(new Error('Please authenticate'));
     }
 }
 
