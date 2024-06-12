@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Document = require("../models/DocumentModel");
 
-exports.findDocument = async (id) => {
+const findDocument = async (id) => {
   if (id == null) return;
   // TODO check if its a valid owner or a valid user
   try {
@@ -13,6 +13,34 @@ exports.findDocument = async (id) => {
   }
 };
 
+// Socket Connection for Realtime Documents
+exports.documentSocket = (io) => {
+  io.on("connection", (socket) => {
+    socket.on("get-document", async (documentId) => {
+      const document = await findDocument(documentId);
+      if (document == null) {
+        socket.emit("document-not-found");
+      } else {
+      socket.join(documentId);
+      socket.emit("load-document", document.content);
+      }
+  
+      socket.on("send-changes", (delta) => {
+        socket.broadcast.to(documentId).emit("receive-changes", delta);
+      });
+  
+      socket.on("save-document", async (content) => {
+        console.log("Content ", content);
+        // TODO: make this abstract
+        await Document.findByIdAndUpdate(documentId, { content });
+      });
+    });
+  });
+  
+  io.on("disconnect", (socket) => {
+    console.log("User disconnected");
+  });
+  }
 // Rest APIs
 
 exports.createDocument = async (req, res) => {

@@ -1,5 +1,7 @@
 require("dotenv").config();
-const express = require("express");
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const cors = require("cors");
 var bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
@@ -14,9 +16,9 @@ const projectRoutes = require("./routes/projectRoutes.js");
 const documentRoutes = require("./routes/documentRoutes");
 const domainRoutes = require("./routes/domainRoutes");
 const testRoutes = require("./routes/testRoutes");
-const { findDocument } = require("./controllers/documentController");
+const {documentSocket} = require("./controllers/documentController");
 const { authMiddleware } = require("./middlewares/authMiddleware");
-const Document = require("./models/DocumentModel");
+
 // MongoDB connection
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -29,11 +31,22 @@ mongoose
   .catch((err) => console.log("Could not connect to MongoDB", err));
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    // origin: "http://localhost:5173",
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+
+});
+documentSocket(io);
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-
+documentSocket(io);
 // Routes
 app.use("/api/register", registerRoutes);
 app.use("/api/user", userRoutes);
@@ -49,41 +62,11 @@ app.use("/ping", (req, res) => {
   return res.status(200).json({ message: "pong" });
 });
 
-const io = require("socket.io")(8002, {
-  cors: {
-    // origin: "http://localhost:5173",
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
 
-
-
-io.on("connection", (socket) => {
-  socket.on("get-document", async (documentId) => {
-    const document = await findDocument(documentId);
-    if (document == null) {
-      socket.emit("document-not-found");
-    } else {
-    socket.join(documentId);
-    socket.emit("load-document", document.content);
-    }
-
-    socket.on("send-changes", (delta) => {
-      socket.broadcast.to(documentId).emit("receive-changes", delta);
-    });
-
-    socket.on("save-document", async (content) => {
-      console.log("Content ", content);
-      // TODO: make this abstract
-      await Document.findByIdAndUpdate(documentId, { content });
-    });
-  });
-});
 
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // Export app for unit testing
-module.exports = app;
+module.exports = server;
