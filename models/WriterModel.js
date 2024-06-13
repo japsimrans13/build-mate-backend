@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
 
-const documentSchema = new mongoose.Schema(
+const writerSchema = new mongoose.Schema(
   {
-    // TODO: make the owner field required
-    owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
     // Users which have read access to the document
     readUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     // Users which have write access to the document
@@ -17,4 +16,4 @@ const documentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Document", documentSchema);
+module.exports = mongoose.model("Writer", writerSchema);

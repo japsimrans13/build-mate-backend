@@ -13,10 +13,10 @@ const staffRoutes = require("./routes/staffRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const clientRoutes = require("./routes/clientRoutes");
 const projectRoutes = require("./routes/projectRoutes.js");
-const documentRoutes = require("./routes/documentRoutes");
+const writerRoutes = require("./routes/writerRoutes.js");
 const domainRoutes = require("./routes/domainRoutes");
 const testRoutes = require("./routes/testRoutes");
-const {documentSocket} = require("./controllers/documentController");
+const {documentSocket} = require("./controllers/writerController.js");
 const { authMiddleware, socketAuthMiddleware } = require("./middlewares/authMiddleware");
 
 // MongoDB connection
@@ -56,7 +56,7 @@ app.use("/api/staff", authMiddleware, staffRoutes);
 app.use("/api/client", authMiddleware, clientRoutes);
 app.use("/api/project", authMiddleware, projectRoutes);
 app.use("/api/task", authMiddleware, taskRoutes);
-app.use("/api/document", authMiddleware, documentRoutes);
+app.use("/api/writer", authMiddleware, writerRoutes);
 app.use("/api/domain", domainRoutes);
 app.use("/api/test", testRoutes);
 app.use("/ping", (req, res) => {
