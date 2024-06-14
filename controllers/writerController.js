@@ -111,8 +111,16 @@ exports.getWriters = async (req, res) => {
         { readUsers: req.user._id },
         { writeUsers: req.user._id },
       ],
-    }).populate([{path:"readUsers", select: 'email name'}, {path:"writeUsers", select: 'email name'}]).limit(limit).skip(startIndex);
-    return res.status(200).json({ documents });
+    })
+    .populate([{path:"readUsers", select: 'email name'}, {path:"writeUsers", select: 'email name'}])
+    .limit(limit)
+    .skip(startIndex);
+    return res.status(200).json({ documents, count : await Writer.countDocuments({
+      $or: [
+        { owner: req.user._id },
+        // TODO: test this code
+      ],
+    }) });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "There was an error while fetching Writer documents" });
