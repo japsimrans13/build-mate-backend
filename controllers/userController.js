@@ -69,7 +69,7 @@ exports.changePassword = async (req, res) => {
 }
 
 // 3. getProfile: This route is used to get the user profile. The user can view its profile details.
-exports.getProfile = async (req, res) => {
+exports.getMyProfile = async (req, res) => {
     try {
         // TODO: populate necessary fields
         // TODO: remove sensitive fields
@@ -80,4 +80,10 @@ exports.getProfile = async (req, res) => {
     }
 }
 
+// Get Other User Profile, This can only be accessed by admin
+// exports.getUserProfile = async (req, res) => {
+
+// }
+
+// TODO: add change password API
 // TODO: add forgot password API
