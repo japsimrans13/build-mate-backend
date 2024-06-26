@@ -73,7 +73,10 @@ exports.getMyProfile = async (req, res) => {
     try {
         // TODO: populate necessary fields
         // TODO: remove sensitive fields
-        const user = await User.findById(req.user._id);
+        const user = await User.findById(req.user._id)
+        .populate('projects')
+        .populate('staff')
+        .populate('client')
         return res.status(200).json({ user });
     } catch (error) {
         return res.status(500).json({ error: error, message: error?.message });
@@ -81,9 +84,9 @@ exports.getMyProfile = async (req, res) => {
 }
 
 // Get Other User Profile, This can only be accessed by admin
-// exports.getUserProfile = async (req, res) => {
+exports.getUserProfile = async (req, res) => {
 
-// }
+}
 
 // TODO: add change password API
 // TODO: add forgot password API

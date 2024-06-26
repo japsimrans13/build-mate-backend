@@ -36,6 +36,8 @@ const userSchema = new mongoose.Schema(
       expires: { type: Date },
     },
     lastLogin: { type: Date },
+    // TODO: add last login location
+    lastLoginLocation: { type: String },
   },
   { timestamps: true }
 );
